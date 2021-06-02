@@ -1,5 +1,6 @@
 <template>
   <main v-if="user" class="position-relative col-lg-12" style="min-height: 100vh">
+    <Header />
     <div class="position-absolute input-form center row p-5">
       <div class="row m-0 w-100 mb-5 justify-content-center">
         <h3 style="color: white">Ваши данные</h3>
@@ -8,12 +9,15 @@
         <h4 v-if="user.type === 'student'" style="color: white">Студент группы: {{user.groups[0].name}}</h4>
         <h4 v-if="user.type === 'teacher'" style="color: white">Преподаватель</h4>
       </div>
-      <div class="row w-100 justify-content-start">
+      <div class="row w-100 justify-content-start mb-3">
         <ul style="list-style: none">
           <li style="color: white">{{ user.name }}</li>
           <li style="color: white">{{ user.middleName }}</li>
           <li style="color: white">{{ user.surname }}</li>
         </ul>
+      </div>
+      <div class="row w-100">
+        <button @click="logout" class="btn btn-success">Выйти</button>
       </div>
     </div>
   </main>
@@ -21,8 +25,10 @@
 
 <script>
 import axios from 'axios'
+import Header from '../components/header'
 
 export default {
+  components: { Header },
   data () {
     return {
       jwt: null,
@@ -49,6 +55,13 @@ export default {
     } else {
       alert('Вы не авторизованы')
       window.location.href = '/'
+    }
+  },
+
+  methods: {
+    logout () {
+      this.$nuxt.$cookiz.remove('sessionId')
+      window.location.reload()
     }
   }
 }
