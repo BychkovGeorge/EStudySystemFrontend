@@ -10,6 +10,13 @@
           <a style="color: white" :href="mark.markList.url" v-if="mark.group.id === group.id" download>{{ mark.name }}</a>
         </div>
       </div>
+      <div v-if="user.type === 'teacher'">
+        <div class="w-100 mb-5" v-for="group in user.groups" :key="group.id">
+          <div class="row m-0 w-100 mb-5 justify-content-center">
+            <h3 style="color: white">Загрузить оценки группе {{ group.name }}</h3>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </template>
