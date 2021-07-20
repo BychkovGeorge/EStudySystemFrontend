@@ -1,5 +1,5 @@
 <template>
-  <main class="position-relative col-lg-12" style="min-height: 100vh">
+  <main v-cloak class="position-relative col-lg-12" style="min-height: 100vh">
     <div class="position-absolute input-form center row p-5">
       <div class="row m-0 w-100 mb-5 justify-content-center">
         <h3 style="color: white">Вход</h3>

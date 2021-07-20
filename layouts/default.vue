@@ -1,5 +1,5 @@
 <template>
-  <div style="background: linear-gradient(to bottom, lightgreen, lightgrey)">
-    <Nuxt />
+  <div v-cloak style="background: linear-gradient(to bottom, darkslateblue, blueviolet)">
+    <Nuxt v-cloak />
   </div>
 </template>

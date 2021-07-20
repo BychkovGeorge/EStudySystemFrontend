@@ -5,12 +5,12 @@
       <div v-for="group in user.groups" :key="group.id" class="w-100 mb-5">
         <div class="row m-0 w-100 mb-5 justify-content-center">
           <h3 style="color: white">
-            Оценки группы {{ group.name }}
+            Расписание группы {{ group.name }}
           </h3>
         </div>
-        <div v-for="mark in marks" :key="mark.id">
-          <div v-if="mark.markList">
-            <a v-if="mark.group.id === group.id" style="color: white" :href="mark.markList.url" download>{{ mark.name }}</a>
+        <div v-for="timetable in timetables" :key="timetable.id">
+          <div v-if="timetable.timetable">
+            <a v-if="timetable.group.id === group.id" style="color: white" :href="timetable.timetable.url" download>{{ timetable.name }}</a>
           </div>
         </div>
       </div>
@@ -18,14 +18,14 @@
         <div v-for="group in user.groups" :key="group.id" class="w-100 mb-5">
           <div class="row m-0 w-100 mb-5 justify-content-center">
             <h3 style="color: white">
-              Загрузить оценки группе {{ group.name }}
+              Загрузить расписание группе {{ group.name }}
             </h3>
           </div>
           <div class="row m-0 w-100 mb-5 justify-content-start">
             <form @submit.prevent="handleSubmit(group.id)">
               <div class="mb-3">
                 <div class="row w-100 mb-5">
-                  <p style="color: white" class="col m-auto">Название листа оценок:</p>
+                  <p style="color: white" class="col m-auto">Название расписания:</p>
                   <b-form-input :id="`name${group.id}`" class="col" type="text" placeholder="Название"></b-form-input>
                 </div>
                 <label>
@@ -54,7 +54,7 @@ export default {
     return {
       jwt: null,
       user: null,
-      marks: [],
+      timetables: [],
       file: null,
       loadedFile: null
     }
@@ -75,12 +75,12 @@ export default {
         }).then((user) => {
           this.user = user.data
           this.user.groups.forEach((group) => {
-            axios.get(`${process.env.backendUrl}/marks?group.id=${group.id}`, {
+            axios.get(`${process.env.backendUrl}/timetables?group.id=${group.id}`, {
               headers: {
                 Authorization: `Bearer ${this.jwt}`
               }
-            }).then((marks) => {
-              this.marks = this.marks.concat(marks.data)
+            }).then((timetables) => {
+              this.timetables = this.timetables.concat(timetables.data)
             })
           })
         })
@@ -118,12 +118,12 @@ export default {
             this.loadedFile = dataObject.data
             let group = null
             this.user.groups.forEach((el) => {
-              if (id === el.id) {
+              if (el.id === id) {
                 group = el
               }
             })
-            axios.post(`${process.env.backendUrl}/marks`, {
-              markList: this.loadedFile,
+            axios.post(`${process.env.backendUrl}/timetables`, {
+              timetable: this.loadedFile,
               name: document.getElementById(`name${id}`).value,
               group
             }, {

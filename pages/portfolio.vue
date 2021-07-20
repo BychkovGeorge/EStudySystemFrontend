@@ -2,31 +2,31 @@
   <main v-if="user" class="pb-5 col-lg-12" style="min-height: 100vh">
     <Header class="pb-5" />
     <div class="input-form m-auto pb-5 container row p-5">
-      <div v-for="group in user.groups" :key="group.id" class="w-100 mb-5">
+      <div class="w-100 mb-5">
         <div class="row m-0 w-100 mb-5 justify-content-center">
           <h3 style="color: white">
-            Оценки группы {{ group.name }}
+            Портфолио {{ user.name }}&nbsp;{{ user.surname }}
           </h3>
         </div>
-        <div v-for="mark in marks" :key="mark.id">
-          <div v-if="mark.markList">
-            <a v-if="mark.group.id === group.id" style="color: white" :href="mark.markList.url" download>{{ mark.name }}</a>
+        <div v-for="portfolio in portfolios" :key="portfolio.id">
+          <div v-if="portfolio.file">
+            <a style="color: white" :href="portfolio.file.url" download>{{ portfolio.name }}</a>
           </div>
         </div>
       </div>
-      <div v-if="user.type === 'teacher'" class="row w-100 ml-0">
-        <div v-for="group in user.groups" :key="group.id" class="w-100 mb-5">
+      <div class="row w-100 ml-0">
+        <div class="w-100 mb-5">
           <div class="row m-0 w-100 mb-5 justify-content-center">
             <h3 style="color: white">
-              Загрузить оценки группе {{ group.name }}
+              Загрузить новый документ в портфолио
             </h3>
           </div>
           <div class="row m-0 w-100 mb-5 justify-content-start">
-            <form @submit.prevent="handleSubmit(group.id)">
+            <form @submit.prevent="handleSubmit()">
               <div class="mb-3">
                 <div class="row w-100 mb-5">
-                  <p style="color: white" class="col m-auto">Название листа оценок:</p>
-                  <b-form-input :id="`name${group.id}`" class="col" type="text" placeholder="Название"></b-form-input>
+                  <p style="color: white" class="col m-auto">Название файла:</p>
+                  <b-form-input class="col" type="text" v-model="name" placeholder="Название"></b-form-input>
                 </div>
                 <label>
                   <input type="file" class="ml-3 download-link" @change="selectFile">
@@ -54,9 +54,10 @@ export default {
     return {
       jwt: null,
       user: null,
-      marks: [],
+      portfolios: [],
       file: null,
-      loadedFile: null
+      loadedFile: null,
+      name: ''
     }
   },
 
@@ -74,14 +75,12 @@ export default {
           }
         }).then((user) => {
           this.user = user.data
-          this.user.groups.forEach((group) => {
-            axios.get(`${process.env.backendUrl}/marks?group.id=${group.id}`, {
-              headers: {
-                Authorization: `Bearer ${this.jwt}`
-              }
-            }).then((marks) => {
-              this.marks = this.marks.concat(marks.data)
-            })
+          axios.get(`${process.env.backendUrl}/portfolios?users_permissions_user.id=${this.user.id}`, {
+            headers: {
+              Authorization: `Bearer ${this.jwt}`
+            }
+          }).then((portfolios) => {
+            this.portfolios = this.portfolios.concat(portfolios.data)
           })
         })
       })
@@ -96,8 +95,8 @@ export default {
       this.file = event.target.files[0]
     },
 
-    handleSubmit (id) {
-      if (document.getElementById(`name${id}`).value === '') {
+    handleSubmit () {
+      if (this.name === '') {
         alert('Введите название')
         return
       }
@@ -116,16 +115,10 @@ export default {
         file.then((onFulfilled) => {
           file.then((dataObject) => {
             this.loadedFile = dataObject.data
-            let group = null
-            this.user.groups.forEach((el) => {
-              if (id === el.id) {
-                group = el
-              }
-            })
-            axios.post(`${process.env.backendUrl}/marks`, {
-              markList: this.loadedFile,
-              name: document.getElementById(`name${id}`).value,
-              group
+            axios.post(`${process.env.backendUrl}/portfolios`, {
+              file: this.loadedFile,
+              name: this.name,
+              users_permissions_user: this.user
             }, {
               headers: {
                 Authorization:
