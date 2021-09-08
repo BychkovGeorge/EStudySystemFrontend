@@ -3,7 +3,7 @@ export default {
   ssr: false,
 
   env: {
-    backendUrl: process.env.BASE_URL || 'http://localhost:1337'
+    backendUrl: process.env.BASE_URL || 'http://80.78.251.5:1337'
   },
 
   // Target: https://go.nuxtjs.dev/config-target
